@@ -51,7 +51,7 @@ Use your Joy-Con or Pro Controller as remote control of your Linux machine.
 4. Run the code.
 
     ```bash
-    python joymote.py
+    python joymote/joymote.py
     ```
 
 ## Disclaimer
