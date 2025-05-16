@@ -1,8 +1,9 @@
-from collections import namedtuple
-from evdev import ecodes as e
 import logging
 import os
+from collections import namedtuple
+
 import tomllib
+from evdev import ecodes as e
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,7 @@ def load_config():
     keys_mapping = parse_keys(data)
 
     return Conf(keys_mapping)
+
 
 def parse_keys(data):
     # from: ecodes of input
