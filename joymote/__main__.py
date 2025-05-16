@@ -7,11 +7,11 @@ import config
 import device
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger.info("Start joymote")
 
-config.load_config()
+conf = config.load_config()
 
 devices = device.scan_devices()
 ui = UInput()
-device.start_key_loop(devices[0], ui)
+device.start_key_loop(devices[0], ui, conf)
