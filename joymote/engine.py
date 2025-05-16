@@ -1,7 +1,7 @@
 import logging
 
 import evdev
-from evdev import ecodes as e
+from evdev import UInput, ecodes as e
 from mushroom import MouseThread, ScrollThread
 
 logger = logging.getLogger(__name__)
@@ -17,9 +17,18 @@ def scan_devices():
     return devices
 
 
-def start_key_loop(device, keyboard_ui, mouse_ui, conf):
+def start_capture(device, conf):
+    keyboard_ui = UInput()
+    mouse_ui = UInput(
+        {
+            e.EV_KEY: [e.BTN_LEFT, e.BTN_RIGHT],
+            e.EV_REL: [e.REL_X, e.REL_Y, e.REL_WHEEL_HI_RES, e.REL_HWHEEL_HI_RES],
+        }
+    )
     mouse_thread = MouseThread(mouse_ui)
     scroll_thread = ScrollThread(mouse_ui)
+
+    logger.info("Start capturing device: %s, %s", device.path, device.name)
 
     for event in device.read_loop():
         if event.type == e.EV_KEY:
