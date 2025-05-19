@@ -1,12 +1,10 @@
 import logging
 
 import evdev
+from config import Conf
 from evdev import UInput
 from evdev import ecodes as e
-
-from config import Conf
 from handler import KeyHandler, MouseHandler, ScrollHandler
-from handler.analog import AnalogHandler
 
 logger = logging.getLogger(__name__)
 
@@ -36,13 +34,21 @@ def start_capture(device, conf: Conf):
         if conf.analog_mapping["left"] == "mouse":
             left_handler = MouseHandler(mouse_ui)
         elif conf.analog_mapping["left"] == "scroll":
-            left_handler = ScrollHandler(mouse_ui)
+            left_handler = ScrollHandler(
+                mouse_ui,
+                conf.analog_options["revert_scroll_x"],
+                conf.analog_options["revert_scroll_y"],
+            )
     right_handler = None
     if "right" in conf.analog_mapping:
         if conf.analog_mapping["right"] == "mouse":
             right_handler = MouseHandler(mouse_ui)
         elif conf.analog_mapping["right"] == "scroll":
-            right_handler = ScrollHandler(mouse_ui)
+            right_handler = ScrollHandler(
+                mouse_ui,
+                conf.analog_options["revert_scroll_x"],
+                conf.analog_options["revert_scroll_y"],
+            )
 
     logger.info("Start capturing device: %s, %s", device.path, device.name)
 

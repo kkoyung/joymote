@@ -7,7 +7,7 @@ from evdev import ecodes as e
 
 logger = logging.getLogger(__name__)
 
-Conf = namedtuple("Conf", ["keys_mapping", "analog_mapping"])
+Conf = namedtuple("Conf", ["keys_mapping", "analog_mapping", "analog_options"])
 
 
 def load_config():
@@ -20,9 +20,9 @@ def load_config():
 
     parse_general(data)
     keys_mapping = parse_keys(data)
-    analog_mapping = parse_analog(data)
+    analog_mapping, analog_options = parse_analog(data)
 
-    return Conf(keys_mapping, analog_mapping)
+    return Conf(keys_mapping, analog_mapping, analog_options)
 
 
 def parse_general(data):
@@ -83,17 +83,27 @@ def parse_analog(data):
     available_input = ["left", "right"]
     available_target = ["mouse", "scroll"]
     mapping = {}
+    options = {
+        "revert_scroll_x": False,
+        "revert_scroll_y": False,
+    }
 
-    if "analog" in data:
-        for input, target in data["analog"].items():
-            if input not in available_input:
-                logger.warning("Unknown analog input '%s'", input)
-                continue
+    if "analog" not in data:
+        return mapping, options
 
-            if target not in available_target:
-                logger.warning("Unknown analog target '%s'", target)
-                continue
+    for key, value in data["analog"].items():
+        if key in available_input and value in available_target:
+            mapping[key] = value
+            continue
 
-            mapping[input] = target
+        if key == "revert_scroll_x" and type(value) is bool:
+            options["revert_scroll_x"] = value
+            continue
 
-    return mapping
+        if key == "revert_scroll_y" and type(value) is bool:
+            options["revert_scroll_y"] = value
+            continue
+
+        logger.warning("Unknown key-value pair '%s: %s'", key, value)
+
+    return mapping, options

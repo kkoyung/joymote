@@ -48,7 +48,7 @@ class AnalogHandler(BaseHandler, threading.Thread):
         if self.x**2 + self.y**2 > self.center_threshold**2:
             # Restart the thread if it has stopped
             if not self.is_alive():
-                self.__init__(self.ui)
+                AnalogHandler.__init__(self, self.ui)
                 self.stopping_event.clear()
                 self.start()
         else:
@@ -77,6 +77,11 @@ class MouseHandler(AnalogHandler):
 
 
 class ScrollHandler(AnalogHandler):
+    def __init__(self, ui: UInput, revert_x: bool, revert_y: bool):
+        super().__init__(ui)
+        self.revert_x = revert_x
+        self.revert_y = revert_y
+
     def step(self):
         logger.debug("ScrollHandler make a step: x=%d, y=%d", self.x, self.y)
 
@@ -92,6 +97,11 @@ class ScrollHandler(AnalogHandler):
             / self.step_factor
         )
 
+        if self.revert_x:
+            rel_x = -rel_x
+        if self.revert_y:
+            rel_y = -rel_y
+
         self.ui.write(e.EV_REL, e.REL_HWHEEL_HI_RES, rel_x)
-        self.ui.write(e.EV_REL, e.REL_WHEEL_HI_RES, rel_y)
+        self.ui.write(e.EV_REL, e.REL_WHEEL_HI_RES, -rel_y)
         self.ui.syn()
