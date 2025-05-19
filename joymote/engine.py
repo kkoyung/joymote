@@ -1,9 +1,12 @@
 import logging
 
 import evdev
-from evdev import UInput, ecodes as e
-from mushroom import BaseThread, MouseThread, ScrollThread
+from evdev import UInput
+from evdev import ecodes as e
+
 from config import Conf
+from handler import KeyHandler, MouseHandler, ScrollHandler
+from handler.analog import AnalogHandler
 
 logger = logging.getLogger(__name__)
 
@@ -26,39 +29,38 @@ def start_capture(device, conf: Conf):
             e.EV_REL: [e.REL_X, e.REL_Y, e.REL_WHEEL_HI_RES, e.REL_HWHEEL_HI_RES],
         }
     )
-    left_analog_handler: BaseThread | None = None
-    right_analog_handler: BaseThread | None = None
+
+    key_handler = KeyHandler(keyboard_ui, conf.keys_mapping)
+    left_handler = None
     if "left" in conf.analog_mapping:
         if conf.analog_mapping["left"] == "mouse":
-            left_analog_handler = MouseThread(mouse_ui)
+            left_handler = MouseHandler(mouse_ui)
         elif conf.analog_mapping["left"] == "scroll":
-            left_analog_handler = ScrollThread(mouse_ui)
+            left_handler = ScrollHandler(mouse_ui)
+    right_handler = None
     if "right" in conf.analog_mapping:
         if conf.analog_mapping["right"] == "mouse":
-            right_analog_handler = MouseThread(mouse_ui)
+            right_handler = MouseHandler(mouse_ui)
         elif conf.analog_mapping["right"] == "scroll":
-            right_analog_handler = ScrollThread(mouse_ui)
+            right_handler = ScrollHandler(mouse_ui)
 
     logger.info("Start capturing device: %s, %s", device.path, device.name)
 
     for event in device.read_loop():
         if event.type == e.EV_KEY:
-            # Key stroke
-            if event.code in conf.keys_mapping:
-                keyboard_ui.write(e.EV_KEY, conf.keys_mapping[event.code], event.value)
-                keyboard_ui.syn()
+            key_handler.push(event)
         elif event.type == e.EV_ABS:
             # Left analog
             if event.code == e.ABS_X:
-                if left_analog_handler is not None:
-                    left_analog_handler.push(event.value, left_analog_handler.y)
+                if left_handler is not None:
+                    left_handler.push(event)
             elif event.code == e.ABS_Y:
-                if left_analog_handler is not None:
-                    left_analog_handler.push(left_analog_handler.x, event.value)
+                if left_handler is not None:
+                    left_handler.push(event)
             # Right analog
             elif event.code == e.ABS_RX:
-                if right_analog_handler is not None:
-                    right_analog_handler.push(event.value, right_analog_handler.y)
+                if right_handler is not None:
+                    right_handler.push(event)
             elif event.code == e.ABS_RY:
-                if right_analog_handler is not None:
-                    right_analog_handler.push(right_analog_handler.x, event.value)
+                if right_handler is not None:
+                    right_handler.push(event)
