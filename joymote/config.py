@@ -7,7 +7,7 @@ from evdev import ecodes as e
 
 logger = logging.getLogger(__name__)
 
-Conf = namedtuple("Conf", ["keys_mapping"])
+Conf = namedtuple("Conf", ["keys_mapping", "analog_mapping"])
 
 
 def load_config():
@@ -21,8 +21,9 @@ def load_config():
         logger.debug("Config: %s", data)
 
     keys_mapping = parse_keys(data)
+    analog_mapping = parse_analog(data)
 
-    return Conf(keys_mapping)
+    return Conf(keys_mapping, analog_mapping)
 
 
 def parse_keys(data):
@@ -64,5 +65,24 @@ def parse_keys(data):
                 input_common,
                 target_name,
             )
+
+    return mapping
+
+def parse_analog(data):
+    available_input = ["left", "right"]
+    available_target = ["mouse", "scroll"]
+    mapping = {}
+
+    if "analog" in data:
+        for input, target in data["analog"].items():
+            if input not in available_input:
+                logger.warning("Unknown analog input '%s'", input)
+                continue
+
+            if target not in available_target:
+                logger.warning("Unknown analog target '%s'", target)
+                continue
+
+            mapping[input] = target
 
     return mapping
