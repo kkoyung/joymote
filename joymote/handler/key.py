@@ -16,6 +16,11 @@ class KeyHandler(BaseHandler):
     def push(self, event: InputEvent):
         if event.type == e.EV_KEY:
             if event.code in self.keys_mapping:
+                logger.debug(
+                    "KeyHandler maps %s to %s",
+                    e.bytype[e.EV_KEY][event.code],
+                    e.bytype[e.EV_KEY][self.keys_mapping[event.code]],
+                )
                 self.ui.write(e.EV_KEY, self.keys_mapping[event.code], event.value)
                 self.ui.syn()
         else:
