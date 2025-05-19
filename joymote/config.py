@@ -17,13 +17,23 @@ def load_config():
 
     with open(config_path, "rb") as f:
         data = tomllib.load(f)
-        logger.info("Loading config: %s", config_path)
-        logger.debug("Config: %s", data)
 
+    parse_general(data)
     keys_mapping = parse_keys(data)
     analog_mapping = parse_analog(data)
 
     return Conf(keys_mapping, analog_mapping)
+
+
+def parse_general(data):
+    if "general" not in data:
+        return
+    general = data["general"]
+
+    # Log level
+    log_level = general.get("log", "INFO").upper()
+    log_level = os.environ.get("JOYMOTE_LOG", log_level).upper()
+    logging.basicConfig(level=log_level)
 
 
 def parse_keys(data):
@@ -67,6 +77,7 @@ def parse_keys(data):
             )
 
     return mapping
+
 
 def parse_analog(data):
     available_input = ["left", "right"]
