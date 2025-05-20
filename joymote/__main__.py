@@ -20,5 +20,8 @@ conf = config.load_config()
 
 # Start main body
 devices = engine.scan_devices()
+if len(devices) == 0:
+    logger.warning("Not detected device")
+    exit()
 for device in devices:
     engine.start_capture(device, conf)
