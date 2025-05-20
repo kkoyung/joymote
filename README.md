@@ -1,6 +1,6 @@
 # Joymote
 
-Use your Joy-Con or Pro Controller as remote control of your Linux machine.
+Use Joy-Con or Pro Controller as remote control of Linux machine.
 
 ## Installation
 
