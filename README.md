@@ -2,9 +2,7 @@
 
 Use Joy-Con or Pro Controller as remote control of Linux machine.
 
-## Installation
-
-### Manually
+## Development environment
 
 1. Install [joycond](https://github.com/DanielOgorchock/joycond). Start and enable it by:
 
@@ -51,7 +49,8 @@ Use Joy-Con or Pro Controller as remote control of Linux machine.
 4. Run the code.
 
     ```bash
-    python joymote/joymote.py
+    python joymote
+    ```
     ```
 
 ## Disclaimer
