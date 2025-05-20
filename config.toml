@@ -1,0 +1,51 @@
+[general]
+# Log messages of level equal to or above the specified level are
+# printed out. Supported levels are "debug", "info", "warning", "error"
+# and "critical" (ordered from lowest to highest).
+# Default: "info"
+#
+#log = "info"
+
+[keys]
+# Assign actions to the buttons of the controller. For example, set
+#     a = "KEY_SPACE"
+# then pressing the "A" button on the controller is equivalent to
+# pressing the space bar on the keyboard. The available values are the
+# names of all keys and buttons, namely all names started with `KEY_` or
+# `BTN_` listed in [1].
+#
+# [1] https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h
+#
+# Default: ""
+#
+#a = ""
+#b = ""
+#x = ""
+#y = ""
+#l = ""
+#r = ""
+#zl = ""
+#zr = ""
+#plus = ""
+#minus = ""
+#capture = ""
+#home = ""
+
+[analog]
+# Assign actions to the two analog sticks. Set it to "mouse", then the
+# analog stick acts as the mouse cursor. Set it to "scroll", then the
+# analog stick acts as the mouse wheel.
+#
+#left = "mouse"
+#right = "scroll"
+
+# Revert the horizontal scrolling direction
+# Default: false
+#
+#revert_scroll_x = false
+
+
+# Revert the vertical scrolling direction
+# Default: false
+#
+#revert_scroll_y = false

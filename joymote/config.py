@@ -62,11 +62,13 @@ def parse_keys(data):
     if "keys" in data:
         for input_common, target_name in data["keys"].items():
             if input_common not in input_common_to_ecodes.keys():
-                logger.warning("Unknown input key '%s'", input_common)
+                if input_common != "":
+                    logger.warning("Unknown input key '%s'", input_common)
                 continue
 
             if target_name not in e.ecodes.keys():
-                logger.warning("Unknown target name '%s'", target_name)
+                if input_common != "":
+                    logger.warning("Unknown target name '%s'", target_name)
                 continue
 
             mapping[input_common_to_ecodes[input_common]] = e.ecodes[target_name]
