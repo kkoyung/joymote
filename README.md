@@ -2,55 +2,55 @@
 
 Use Joy-Con or Pro Controller as remote control of Linux machine.
 
-## Development environment
+## Requirements
 
-1. Install [joycond](https://github.com/DanielOgorchock/joycond). Start and enable it by:
+- [joycond](https://github.com/DanielOgorchock/joycond)
+  - Install and start. For example, if you are on Arch Linux, you can run
 
     ```bash
-    sudo systemctl start joycond
-    sudo systemctl enable joycond
+    yay -S joycond-git
+    sudo systemctl enable --now joycond
     ```
 
-    Follow the instruction [here](https://github.com/DanielOgorchock/joycond?tab=readme-ov-file#usage) to pair the controller(s).
-
-2. Check whether the `uinput` module is loaded, by running:
+  - Then, follow [this instruction](https://github.com/DanielOgorchock/joycond?tab=readme-ov-file#usage) to pair the controller(s).
+- [uinput module](https://www.kernel.org/doc/html/v4.12/input/uinput.html)
+  - Check whether the `uinput` module is loaded, by running:
 
     ```bash
     lsmod | grep uinput
     ```
 
-    If it is loaded, you will see a line like:
-
-    ```plaintext
-    uinput                 20480  0
-    ```
-
-    You can manually load the module by running:
+    If it is loaded, you will see a line like `uinput                 20480  0`.
+  - You can manually load the module by running:
 
     ```bash
     sudo modprobe uinput
     ```
 
-    Or permanently load the module by running:
+  - You can also run the following command to load `uinput` modules automatically on boot.
 
     ```bash
     sudo bash -c "cat uinput > /etc/modules-load.d/uinput.conf"
     ```
 
-3. Set up the environment.
+## Installation
+
+## Usage
+
+## Run development build
+
+We use [uv](https://docs.astral.sh/) to manage this project.
+
+1. Clone the repository.
 
     ```bash
-    git clone
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
+    git clone https://github.com/kkoyung/joymote.git
     ```
 
-4. Run the code.
+2. Run the code.
 
     ```bash
-    python joymote
-    ```
+    uv run joymote
     ```
 
 ## Disclaimer
