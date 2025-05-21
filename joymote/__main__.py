@@ -5,10 +5,22 @@ import logging
 
 import config
 import engine
+import version
 
 # Parse arguments
 parser = argparse.ArgumentParser(
-    description="Use Joy-Con or Pro Controller as remote control of Linux machine."
+    description="Use Joy-Con or Pro Controller as remote control of Linux machine.",
+    add_help=False,
+)
+parser.add_argument(
+    "-h", "--help", help="Show this help message and exit.", action="help"
+)
+parser.add_argument(
+    "-v",
+    "--version",
+    help="Print version information.",
+    action="version",
+    version=version.get_version(),
 )
 args = parser.parse_args()
 
