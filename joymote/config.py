@@ -78,6 +78,13 @@ def parse_keys(data):
                 target_name,
             )
 
+    if "analog" in data:
+        for input_common, target_name in data["analog"].items():
+            if input_common == "left_press" and target_name in e.ecodes.keys():
+                mapping[e.BTN_THUMBL] = e.ecodes[target_name]
+            if input_common == "right_press" and target_name in e.ecodes.keys():
+                mapping[e.BTN_THUMBR] = e.ecodes[target_name]
+
     return mapping
 
 

@@ -39,6 +39,12 @@
 #left = "mouse"
 #right = "scroll"
 
+# Specify the actions when you press the analog sticks. The avaialble
+# values are same as the keys in the section [keys].
+#
+#left_press = ""
+#right_press = ""
+
 # Revert the horizontal scrolling direction
 # Default: false
 #
