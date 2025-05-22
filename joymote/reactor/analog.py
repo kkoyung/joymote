@@ -6,16 +6,14 @@ from time import sleep
 from evdev import InputEvent, UInput
 from evdev import ecodes as e
 
-from handler.base import BaseHandler
-
 logger = logging.getLogger(__name__)
 
 
-class AnalogHandler(BaseHandler, threading.Thread):
+class BaseThread(threading.Thread):
     def __init__(self, ui: UInput):
-        BaseHandler.__init__(self, ui)
         threading.Thread.__init__(self, daemon=True)
 
+        self.ui = ui
         self.step_time = 0.02
         self.step_factor = 1000
         self.center_threshold = 3000
@@ -32,7 +30,7 @@ class AnalogHandler(BaseHandler, threading.Thread):
                 break
 
     def step(self):
-        logger.debug("AnalogHandler make a step: x=%d, y=%d", self.x, self.y)
+        logger.debug("BaseThread make a step: x=%d, y=%d", self.x, self.y)
 
     def push(self, event: InputEvent):
         if event.type == e.EV_ABS:
@@ -47,7 +45,7 @@ class AnalogHandler(BaseHandler, threading.Thread):
         if self.x**2 + self.y**2 > self.center_threshold**2:
             # Restart the thread if it has stopped
             if not self.is_alive():
-                AnalogHandler.__init__(self, self.ui)
+                threading.Thread.__init__(self, daemon=True)
                 self.stopping_event.clear()
                 self.start()
         else:
@@ -55,9 +53,9 @@ class AnalogHandler(BaseHandler, threading.Thread):
             self.stopping_event.set()
 
 
-class MouseHandler(AnalogHandler):
+class CursorThread(BaseThread):
     def step(self):
-        logger.debug("MouseHandler make a step: x=%d, y=%d", self.x, self.y)
+        logger.debug("CursorThread make a step: x=%d, y=%d", self.x, self.y)
 
         if self.x == 0:
             self.x = 1  # set to 1 to avoid division of zero
@@ -75,7 +73,7 @@ class MouseHandler(AnalogHandler):
         self.ui.syn()
 
 
-class ScrollHandler(AnalogHandler):
+class WheelThread(BaseThread):
     def __init__(self, ui: UInput, revert_x: bool, revert_y: bool):
         super().__init__(ui)
         self.revert_x = revert_x

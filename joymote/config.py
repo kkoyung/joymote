@@ -1,118 +1,219 @@
 import logging
 import os
-from collections import namedtuple
-
 import tomllib
+from enum import Enum
+
+from evdev import InputEvent
 from evdev import ecodes as e
 
 logger = logging.getLogger(__name__)
 
-Conf = namedtuple("Conf", ["keys_mapping", "analog_mapping", "analog_options"])
+
+class Config:
+    def __init__(self):
+        # FIXME: default value, loading order
+        home_directory = os.getenv("HOME", "")
+        config_path = home_directory + "/.config/joymote/config.toml"
+
+        with open(config_path, "rb") as f:
+            self.data = tomllib.load(f)
+
+        self.mapper = Mapper()
+        self.options = {
+            "revert_scroll_x": False,
+            "revert_scroll_y": False,
+        }
+        self.parse_general()
+        self.parse_keys()
+        self.parse_analog()
+
+    def parse_general(self):
+        if "general" not in self.data:
+            return
+        general = self.data["general"]
+
+        # Log level
+        log_level = general.get("log", "INFO").upper()
+        log_level = os.environ.get("JOYMOTE_LOG", log_level).upper()
+        logging.basicConfig(level=log_level)
+
+    def parse_keys(self):
+        if "keys" in self.data:
+            for input_str, target_str in self.data["keys"].items():
+                input = Input.from_string(input_str)
+                if input is None or input in [
+                    Input.LEFT_ANALOG,
+                    Input.LEFT_ANALOG_PRESS,
+                    Input.RIGHT_ANALOG,
+                    Input.RIGHT_ANALOG_PRESS,
+                ]:
+                    logger.warning("Unknown input '%s'", input_str)
+                    continue
+
+                if target_str not in e.ecodes.keys():
+                    logger.warning("Unknown target '%s'", input_str)
+                    continue
+
+                self.mapper.insert(
+                    input, Target(type=TargetType.KEYBOARD, value=e.ecodes[target_str])
+                )
+
+    def parse_analog(self):
+        if "analog" in self.data:
+            for key, value in self.data["analog"].items():
+                input = Input.from_string(key)
+                if input is not None and input in [
+                    Input.LEFT_ANALOG_PRESS,
+                    Input.RIGHT_ANALOG_PRESS,
+                ]:
+                    if value in e.ecodes.keys():
+                        self.mapper.insert(
+                            input,
+                            Target(type=TargetType.KEYBOARD, value=e.ecodes[value]),
+                        )
+                    else:
+                        logger.warning("Unknown value '%s'", key)
+
+                elif input is not None and input in [
+                    Input.LEFT_ANALOG,
+                    Input.RIGHT_ANALOG,
+                ]:
+                    if value == "cursor":
+                        self.mapper.insert(
+                            input,
+                            Target(type=TargetType.MOUSE, value=MouseTarget.CURSOR),
+                        )
+                    elif value == "wheel":
+                        self.mapper.insert(
+                            input,
+                            Target(type=TargetType.MOUSE, value=MouseTarget.WHEEL),
+                        )
+                    else:
+                        logger.warning("Unknown value '%s'", value)
+                elif key == "revert_scroll_x":
+                    if type(value) is bool:
+                        self.options["revert_scroll_x"] = value
+                    else:
+                        logger.warning("Unknown value '%s'", value)
+                elif key == "revert_scroll_y":
+                    if type(value) is bool:
+                        self.options["revert_scroll_y"] = value
+                    else:
+                        logger.warning("Unknown value '%s'", value)
+                else:
+                    logger.warning("Unknown key '%s'", key)
 
 
-def load_config():
-    # FIXME: default value, loading order
-    home_directory = os.getenv("HOME", "")
-    config_path = home_directory + "/.config/joymote/config.toml"
+class Input(Enum):
+    UP = 1
+    DOWN = 2
+    LEFT = 3
+    RIGHT = 4
+    A = 5
+    B = 6
+    X = 7
+    Y = 8
+    L = 9
+    R = 10
+    ZL = 11
+    ZR = 12
+    PLUS = 13
+    MINUS = 14
+    CAPTURE = 15
+    HOME = 16
+    LEFT_ANALOG = 17
+    LEFT_ANALOG_PRESS = 18
+    RIGHT_ANALOG = 19
+    RIGHT_ANALOG_PRESS = 20
 
-    with open(config_path, "rb") as f:
-        data = tomllib.load(f)
+    @staticmethod
+    def from_string(string: str):
+        all_names = [i.name for i in list(Input)]
+        if string.upper() in all_names:
+            return Input[string.upper()]
+        else:
+            return None
 
-    parse_general(data)
-    keys_mapping = parse_keys(data)
-    analog_mapping, analog_options = parse_analog(data)
-
-    return Conf(keys_mapping, analog_mapping, analog_options)
-
-
-def parse_general(data):
-    if "general" not in data:
-        return
-    general = data["general"]
-
-    # Log level
-    log_level = general.get("log", "INFO").upper()
-    log_level = os.environ.get("JOYMOTE_LOG", log_level).upper()
-    logging.basicConfig(level=log_level)
-
-
-def parse_keys(data):
-    # from: ecodes of input
-    # to: ecodes of target
-    mapping = {}
-
-    # from: common name of input
-    # to: ecodes of input
-    input_common_to_ecodes = {
-        "a": e.BTN_EAST,
-        "b": e.BTN_SOUTH,
-        "x": e.BTN_NORTH,
-        "y": e.BTN_WEST,
-        "l": e.BTN_TL,
-        "r": e.BTN_TR,
-        "zl": e.BTN_TL2,
-        "zr": e.BTN_TR2,
-        "plus": e.BTN_START,
-        "minus": e.BTN_SELECT,
-        "capture": e.BTN_Z,
-        "home": e.BTN_MODE,
-    }
-    # FIXME: SYNC button
-
-    if "keys" in data:
-        for input_common, target_name in data["keys"].items():
-            if input_common not in input_common_to_ecodes.keys():
-                if input_common != "":
-                    logger.warning("Unknown input key '%s'", input_common)
-                continue
-
-            if target_name not in e.ecodes.keys():
-                if input_common != "":
-                    logger.warning("Unknown target name '%s'", target_name)
-                continue
-
-            mapping[input_common_to_ecodes[input_common]] = e.ecodes[target_name]
-            logger.debug(
-                "Mapped '%s' to '%s'",
-                input_common,
-                target_name,
-            )
-
-    if "analog" in data:
-        for input_common, target_name in data["analog"].items():
-            if input_common == "left_press" and target_name in e.ecodes.keys():
-                mapping[e.BTN_THUMBL] = e.ecodes[target_name]
-            if input_common == "right_press" and target_name in e.ecodes.keys():
-                mapping[e.BTN_THUMBR] = e.ecodes[target_name]
-
-    return mapping
+    @staticmethod
+    def from_event(event: InputEvent):
+        if event.type == e.EV_KEY:
+            if event.code == e.BTN_EAST and event.value == 1:
+                return Input.A
+            elif event.code == e.BTN_SOUTH and event.value == 1:
+                return Input.B
+            elif event.code == e.BTN_NORTH and event.value == 1:
+                return Input.X
+            elif event.code == e.BTN_WEST and event.value == 1:
+                return Input.Y
+            elif event.code == e.BTN_TL and event.value == 1:
+                return Input.L
+            elif event.code == e.BTN_TR and event.value == 1:
+                return Input.R
+            elif event.code == e.BTN_TL2 and event.value == 1:
+                return Input.ZL
+            elif event.code == e.BTN_TR2 and event.value == 1:
+                return Input.ZR
+            elif event.code == e.BTN_START and event.value == 1:
+                return Input.PLUS
+            elif event.code == e.BTN_SELECT and event.value == 1:
+                return Input.MINUS
+            elif event.code == e.BTN_Z and event.value == 1:
+                return Input.CAPTURE
+            elif event.code == e.BTN_MODE and event.value == 1:
+                return Input.HOME
+            else:
+                return None
+        elif event.type == e.EV_ABS:
+            if event.code == e.ABS_X or event.code == e.ABS_Y:
+                return Input.LEFT_ANALOG
+            elif event.code == e.ABS_RX or event.code == e.ABS_RY:
+                return Input.RIGHT_ANALOG
+            elif event.code == e.ABS_HAT0Y and event.value == -1:
+                return Input.UP
+            elif event.code == e.ABS_HAT0Y and event.value == 1:
+                return Input.DOWN
+            elif event.code == e.ABS_HAT0X and event.value == -1:
+                return Input.LEFT
+            elif event.code == e.ABS_HAT0X and event.value == 1:
+                return Input.RIGHT
+            else:
+                return None
+        else:
+            return None
 
 
-def parse_analog(data):
-    available_input = ["left", "right"]
-    available_target = ["mouse", "scroll"]
-    mapping = {}
-    options = {
-        "revert_scroll_x": False,
-        "revert_scroll_y": False,
-    }
+class TargetType(Enum):
+    KEYBOARD = 1
+    MOUSE = 2
+    # COMMAND = 3
 
-    if "analog" not in data:
-        return mapping, options
 
-    for key, value in data["analog"].items():
-        if key in available_input and value in available_target:
-            mapping[key] = value
-            continue
+type KeyboardTarget = int
 
-        if key == "revert_scroll_x" and type(value) is bool:
-            options["revert_scroll_x"] = value
-            continue
 
-        if key == "revert_scroll_y" and type(value) is bool:
-            options["revert_scroll_y"] = value
-            continue
+class MouseTarget(Enum):
+    CURSOR = 1
+    WHEEL = 2
 
-        logger.warning("Unknown key-value pair '%s: %s'", key, value)
 
-    return mapping, options
+# type CommandTarget = str
+
+
+class Target:
+    def __init__(self, type: TargetType, value: KeyboardTarget | MouseTarget):
+        self.type = type
+        self.value = value
+
+
+class Mapper:
+    def __init__(self):
+        self.mapping = {}
+
+    def insert(self, input: Input, target: Target):
+        self.mapping[input] = target
+
+    def translate(self, input: Input) -> Target | None:
+        if input in self.mapping.keys():
+            return self.mapping[input]
+        else:
+            return None

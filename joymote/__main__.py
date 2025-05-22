@@ -28,7 +28,7 @@ args = parser.parse_args()
 logger = logging.getLogger(__name__)
 
 # Load configuration
-conf = config.load_config()
+conf = config.Config()
 
 # Start main body
 devices = engine.scan_devices()

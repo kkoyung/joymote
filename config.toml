@@ -18,6 +18,10 @@
 #
 # Default: ""
 #
+#up =""
+#down =""
+#left =""
+#right =""
 #a = ""
 #b = ""
 #x = ""
@@ -32,24 +36,23 @@
 #home = ""
 
 [analog]
-# Assign actions to the two analog sticks. Set it to "mouse", then the
-# analog stick acts as the mouse cursor. Set it to "scroll", then the
-# analog stick acts as the mouse wheel.
+# Assign actions to the two analog sticks. Set it to "cursor", then the
+# analog stick controls the mouse cursor. Set it to "wheel", then the
+# analog stick controls the mouse wheel.
 #
-#left = "mouse"
-#right = "scroll"
+#left_analog = "mouse"
+#right_analog = "wheel"
 
 # Specify the actions when you press the analog sticks. The avaialble
 # values are same as the keys in the section [keys].
 #
-#left_press = ""
-#right_press = ""
+#left_analog_press = ""
+#righ_analogt_press = ""
 
 # Revert the horizontal scrolling direction
 # Default: false
 #
 #revert_scroll_x = false
-
 
 # Revert the vertical scrolling direction
 # Default: false
