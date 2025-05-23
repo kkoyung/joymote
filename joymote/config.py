@@ -81,12 +81,12 @@ class Config:
                     if value == "cursor":
                         self.mapper.insert(
                             input,
-                            Target(type=TargetType.MOUSE, value=MouseTarget.CURSOR),
+                            Target(type=TargetType.MOUSE, value=MouseTargetValue.CURSOR),
                         )
                     elif value == "wheel":
                         self.mapper.insert(
                             input,
-                            Target(type=TargetType.MOUSE, value=MouseTarget.WHEEL),
+                            Target(type=TargetType.MOUSE, value=MouseTargetValue.WHEEL),
                         )
                     else:
                         logger.warning("Unknown value '%s'", value)
@@ -188,19 +188,22 @@ class TargetType(Enum):
     # COMMAND = 3
 
 
-type KeyboardTarget = int
+type KeyboardTargetValue = int
 
 
-class MouseTarget(Enum):
+class MouseTargetValue(Enum):
     CURSOR = 1
     WHEEL = 2
 
 
-# type CommandTarget = str
+# type CommandTargetValue = str
+
+
+type TargetValue = KeyboardTargetValue | MouseTargetValue
 
 
 class Target:
-    def __init__(self, type: TargetType, value: KeyboardTarget | MouseTarget):
+    def __init__(self, type: TargetType, value: TargetValue):
         self.type = type
         self.value = value
 

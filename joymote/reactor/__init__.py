@@ -1,4 +1,4 @@
-from config import Config, Input, MouseTarget
+from config import Config, Input, MouseTargetValue
 from evdev import InputEvent, UInput
 from evdev import ecodes as e
 
@@ -36,9 +36,9 @@ class Reactor:
             self.keyboard_ui.write(e.EV_KEY, target.value, 0)
             self.keyboard_ui.syn()
         else:
-            if target.value == MouseTarget.CURSOR:
+            if target.value == MouseTargetValue.CURSOR:
                 self.cursor_thread.push(event)
-            elif target.value == MouseTarget.WHEEL:
+            elif target.value == MouseTargetValue.WHEEL:
                 self.wheel_thread.push(event)
             else:
                 return
