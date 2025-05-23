@@ -27,19 +27,15 @@ class Reactor:
         if input is None:
             return
 
-        if input not in [Input.LEFT_ANALOG, Input.RIGHT_ANALOG]:
-            target = self.conf.mapper.translate(input)
-            if target is None:
-                return
+        target = self.conf.mapper.translate(input)
+        if target is None:
+            return
 
+        if input not in [Input.LEFT_ANALOG, Input.RIGHT_ANALOG]:
             self.keyboard_ui.write(e.EV_KEY, target.value, 1)
             self.keyboard_ui.write(e.EV_KEY, target.value, 0)
             self.keyboard_ui.syn()
         else:
-            target = self.conf.mapper.translate(input)
-            if target is None:
-                return
-
             if target.value == MouseTarget.CURSOR:
                 self.cursor_thread.push(event)
             elif target.value == MouseTarget.WHEEL:
