@@ -19,6 +19,8 @@ def get_version() -> str:
                 text=True,
             ).strip()
 
+            # Remove starting "v"
+            git_describe = re.sub(r"^v", r"", git_describe)
             # Add "r" before the number of revisions
             git_describe = re.sub(r"([^-]*-g)", r"r\1", git_describe)
 
