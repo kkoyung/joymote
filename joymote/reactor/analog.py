@@ -39,7 +39,7 @@ class BaseThread(threading.Thread):
             elif event.code == e.ABS_Y or event.code == e.ABS_RY:
                 self.y = event.value
         else:
-            logger.error("Pushed non-AbsEvent to AnalogHandler")
+            logger.error("Pushed non-AbsEvent to BaseThread")
             return
 
         if self.x**2 + self.y**2 > self.center_threshold**2:
