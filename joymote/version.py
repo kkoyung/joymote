@@ -20,7 +20,7 @@ def get_version() -> str:
             ).strip()
 
             # Add "r" before the number of revisions
-            git_describe = re.sub(r"-(\d+)-", r"-r\1-", git_describe)
+            git_describe = re.sub(r"([^-]*-g)", r"r\1", git_describe)
 
             return f"{git_describe}"
         except Exception:
