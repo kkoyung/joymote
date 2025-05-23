@@ -1,6 +1,6 @@
 [project]
 name = "joymote"
-version = "0.0.0"
+version = "0.0.1"
 description = "Use Joy-Con or Pro Controller as remote control of Linux machine."
 readme = "README.md"
 requires-python = ">=3.13"
