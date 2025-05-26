@@ -135,7 +135,19 @@ class CursorDirectionTarget:
         self.pixel = pixel
 
 
-type Target = KeyboardTarget | MouseTarget | CommandTarget | CursorDirectionTarget
+class ScrollDirectionTarget:
+    def __init__(self, direction: Direction, speed: int):
+        self.direction = direction
+        self.speed = speed
+
+
+type Target = (
+    KeyboardTarget
+    | MouseTarget
+    | CommandTarget
+    | CursorDirectionTarget
+    | ScrollDirectionTarget
+)
 
 
 #######################################################################

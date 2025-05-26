@@ -3,7 +3,13 @@ import subprocess
 from config import AnalogInput, Config, KeyInput, MouseTarget
 from evdev import InputEvent, UInput
 from evdev import ecodes as e
-from util import CommandTarget, CursorDirectionTarget, Direction, KeyboardTarget
+from util import (
+    CommandTarget,
+    CursorDirectionTarget,
+    Direction,
+    KeyboardTarget,
+    ScrollDirectionTarget,
+)
 
 from reactor.analog import CursorThread, WheelThread
 
@@ -46,6 +52,16 @@ class Reactor:
                     self.mouse_ui.write(e.EV_REL, e.REL_X, -target.pixel)
                 elif target.direction == Direction.RIGHT:
                     self.mouse_ui.write(e.EV_REL, e.REL_X, target.pixel)
+                self.mouse_ui.syn()
+            elif isinstance(target, ScrollDirectionTarget):
+                if target.direction == Direction.UP:
+                    self.mouse_ui.write(e.EV_REL, e.REL_WHEEL_HI_RES, target.speed)
+                elif target.direction == Direction.DOWN:
+                    self.mouse_ui.write(e.EV_REL, e.REL_WHEEL_HI_RES, -target.speed)
+                elif target.direction == Direction.LEFT:
+                    self.mouse_ui.write(e.EV_REL, e.REL_HWHEEL_HI_RES, -target.speed)
+                elif target.direction == Direction.RIGHT:
+                    self.mouse_ui.write(e.EV_REL, e.REL_HWHEEL_HI_RES, target.speed)
                 self.mouse_ui.syn()
 
         elif analog_input is not None:

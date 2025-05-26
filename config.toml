@@ -31,8 +31,14 @@
 # "B" button of the controller.
 #
 # "cursor_up", "cursor_down", "cursor_left", "cursor_right" action:
-# The content part is a non-negative integer. The cursor will move
-# in the corresponding direction by the specified number of pixels.
+# The content part is a non-negative integer. The cursor will move in
+# the corresponding direction by the specified number of pixels when you
+# press the controller button.
+#
+# "scroll_up", "scroll_down", "scroll_left", "scroll_right" action:
+# The content part is a non-negative integer. Scroll in the
+# corresponding direction in the speed specified by the non-negative
+# integer. Typical value is 100.
 #
 # Default: "" (No acttion is assigned.)
 #
@@ -58,7 +64,7 @@
 [analog]
 # Assign actions to the analog sticks of the controller. Set it to
 # "cursor", then the analog stick controls the mouse cursor. Set it to
-# "wheel", then the analog stick controls the mouse wheel.
+# "wheel", then the analog stick controls the mouse wheel to scroll.
 #
 #left_analog = "mouse"
 #right_analog = "wheel"

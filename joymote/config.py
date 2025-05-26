@@ -12,6 +12,7 @@ from util import (
     KeyInput,
     Mapper,
     MouseTarget,
+    ScrollDirectionTarget,
 )
 
 logger = logging.getLogger(__name__)
@@ -107,7 +108,49 @@ class Config:
                         if target_content < 0:
                             raise Exception("Negative value")
                         self.mapper.insert(
-                            input, CursorDirectionTarget(Direction.RIGHT, target_content)
+                            input,
+                            CursorDirectionTarget(Direction.RIGHT, target_content),
+                        )
+                    except Exception:
+                        logger.warning("Unknown target '%s'", target_str)
+                elif target_type.lower() == "scroll_up":
+                    try:
+                        target_content = int(target_content)
+                        if target_content < 0:
+                            raise Exception("Negative value")
+                        self.mapper.insert(
+                            input, ScrollDirectionTarget(Direction.UP, target_content)
+                        )
+                    except Exception:
+                        logger.warning("Unknown target '%s'", target_str)
+                elif target_type.lower() == "scroll_down":
+                    try:
+                        target_content = int(target_content)
+                        if target_content < 0:
+                            raise Exception("Negative value")
+                        self.mapper.insert(
+                            input, ScrollDirectionTarget(Direction.DOWN, target_content)
+                        )
+                    except Exception:
+                        logger.warning("Unknown target '%s'", target_str)
+                elif target_type.lower() == "scroll_left":
+                    try:
+                        target_content = int(target_content)
+                        if target_content < 0:
+                            raise Exception("Negative value")
+                        self.mapper.insert(
+                            input, ScrollDirectionTarget(Direction.LEFT, target_content)
+                        )
+                    except Exception:
+                        logger.warning("Unknown target '%s'", target_str)
+                elif target_type.lower() == "scroll_right":
+                    try:
+                        target_content = int(target_content)
+                        if target_content < 0:
+                            raise Exception("Negative value")
+                        self.mapper.insert(
+                            input,
+                            ScrollDirectionTarget(Direction.RIGHT, target_content),
                         )
                     except Exception:
                         logger.warning("Unknown target '%s'", target_str)
