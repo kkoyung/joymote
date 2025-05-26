@@ -122,7 +122,20 @@ class CommandTarget:
         self.command = command
 
 
-type Target = KeyboardTarget | MouseTarget | CommandTarget
+class Direction(Enum):
+    UP = 1
+    DOWN = 2
+    LEFT = 3
+    RIGHT = 4
+
+
+class CursorDirectionTarget:
+    def __init__(self, direction: Direction, pixel: int):
+        self.direction = direction
+        self.pixel = pixel
+
+
+type Target = KeyboardTarget | MouseTarget | CommandTarget | CursorDirectionTarget
 
 
 #######################################################################

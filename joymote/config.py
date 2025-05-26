@@ -6,6 +6,8 @@ from evdev import ecodes as e
 from util import (
     AnalogInput,
     CommandTarget,
+    CursorDirectionTarget,
+    Direction,
     KeyboardTarget,
     KeyInput,
     Mapper,
@@ -69,6 +71,46 @@ class Config:
                     self.mapper.insert(input, KeyboardTarget(e.ecodes[target_content]))
                 elif target_type.lower() == "command":
                     self.mapper.insert(input, CommandTarget(target_content))
+                elif target_type.lower() == "cursor_up":
+                    try:
+                        target_content = int(target_content)
+                        if target_content < 0:
+                            raise Exception("Negative value")
+                        self.mapper.insert(
+                            input, CursorDirectionTarget(Direction.UP, target_content)
+                        )
+                    except Exception:
+                        logger.warning("Unknown target '%s'", target_str)
+                elif target_type.lower() == "cursor_down":
+                    try:
+                        target_content = int(target_content)
+                        if target_content < 0:
+                            raise Exception("Negative value")
+                        self.mapper.insert(
+                            input, CursorDirectionTarget(Direction.DOWN, target_content)
+                        )
+                    except Exception:
+                        logger.warning("Unknown target '%s'", target_str)
+                elif target_type.lower() == "cursor_left":
+                    try:
+                        target_content = int(target_content)
+                        if target_content < 0:
+                            raise Exception("Negative value")
+                        self.mapper.insert(
+                            input, CursorDirectionTarget(Direction.LEFT, target_content)
+                        )
+                    except Exception:
+                        logger.warning("Unknown target '%s'", target_str)
+                elif target_type.lower() == "cursor_right":
+                    try:
+                        target_content = int(target_content)
+                        if target_content < 0:
+                            raise Exception("Negative value")
+                        self.mapper.insert(
+                            input, CursorDirectionTarget(Direction.RIGHT, target_content)
+                        )
+                    except Exception:
+                        logger.warning("Unknown target '%s'", target_str)
                 else:
                     logger.warning("Unknown target '%s'", target_str)
 
