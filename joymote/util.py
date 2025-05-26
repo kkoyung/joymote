@@ -107,7 +107,9 @@ type Input = KeyInput | AnalogInput
 #######################################################################
 
 
-type KeyboardTarget = int
+class KeyboardTarget:
+    def __init__(self, ecodes):
+        self.ecodes = ecodes
 
 
 class MouseTarget(Enum):
@@ -115,10 +117,12 @@ class MouseTarget(Enum):
     WHEEL = 2
 
 
-# type CommandTarget = str
+class CommandTarget:
+    def __init__(self, command: str):
+        self.command = command
 
 
-type Target = KeyboardTarget | MouseTarget # | CommandTarget
+type Target = KeyboardTarget | MouseTarget | CommandTarget
 
 
 #######################################################################

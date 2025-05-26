@@ -3,7 +3,14 @@ import os
 import tomllib
 
 from evdev import ecodes as e
-from util import AnalogInput, KeyInput, Mapper, MouseTarget
+from util import (
+    AnalogInput,
+    CommandTarget,
+    KeyboardTarget,
+    KeyInput,
+    Mapper,
+    MouseTarget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +58,19 @@ class Config:
                     logger.warning("Unknown input '%s'", input_str)
                     continue
 
-                if target_str not in e.ecodes.keys():
-                    logger.warning("Unknown target '%s'", input_str)
+                target_split = target_str.split(":", 1)
+                if len(target_split) < 2:
+                    logger.warning("Unknown target '%s'", target_str)
                     continue
+                target_type = target_split[0].strip()
+                target_content = target_split[1].strip()
 
-                self.mapper.insert(input, e.ecodes[target_str])
+                if target_type.lower() == "key" and target_content in e.ecodes.keys():
+                    self.mapper.insert(input, KeyboardTarget(e.ecodes[target_content]))
+                elif target_type.lower() == "command":
+                    self.mapper.insert(input, CommandTarget(target_content))
+                else:
+                    logger.warning("Unknown target '%s'", target_str)
 
     def parse_analog(self):
         if "analog" in self.data:

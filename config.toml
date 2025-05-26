@@ -7,16 +7,31 @@
 #log = "info"
 
 [key]
-# Assign actions to the buttons of the controller. For example, set
-#     a = "KEY_SPACE"
-# Then, joymote will fire a space bar key stroke when you press the "A"
-# button on the controller. The available values are the names of all
-# keys and buttons, namely all names started with `KEY_` or `BTN_`
-# listed in [1]. Empty string "" means no action.
+# Assign actions to the buttons of the controller.
+#
+# An action consists of type and content, separated by a colon ":". It
+# is written in the form
+#     <type>:<content>
+#
+# There are two types of actions: "key", "command".
+#
+# For key type, the content part is a key name of the keyboard. That key
+# will be triggered when you press the controller button. For example,
+# if you set
+#     a = "key:KEY_ESC"
+# Then, the ESC key will be triggered when you press the "A" button on
+# the controller. The available names of keys are listed in [1] with the
+# name started with `KEY_` or `BTN_`.
 #
 # [1] https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h
 #
-# Default: ""
+# For command type, the content part is a command that will be executed
+# when you press the controller button. For example, if you set
+#     b = "command:touch ~/file.txt"
+# The command "touch ~/file.txt" will be triggered when you press the
+# "B" button of the controller.
+#
+# Default: "" (It means no acttion is assigned.)
 #
 #up =""
 #down =""

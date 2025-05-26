@@ -1,6 +1,9 @@
+import subprocess
+
 from config import AnalogInput, Config, KeyInput, MouseTarget
 from evdev import InputEvent, UInput
 from evdev import ecodes as e
+from util import CommandTarget, KeyboardTarget
 
 from reactor.analog import CursorThread, WheelThread
 
@@ -28,20 +31,16 @@ class Reactor:
 
         if key_input is not None:
             target = self.conf.mapper.translate(key_input)
-            if target is None:
-                return
+            if isinstance(target, KeyboardTarget):
+                self.keyboard_ui.write(e.EV_KEY, target.ecodes, 1)
+                self.keyboard_ui.write(e.EV_KEY, target.ecodes, 0)
+                self.keyboard_ui.syn()
+            elif isinstance(target, CommandTarget):
+                subprocess.Popen(target.command, stdout=subprocess.DEVNULL, shell=True)
 
-            self.keyboard_ui.write(e.EV_KEY, target, 1)
-            self.keyboard_ui.write(e.EV_KEY, target, 0)
-            self.keyboard_ui.syn()
         elif analog_input is not None:
             target = self.conf.mapper.translate(analog_input)
-            if target is None:
-                return
-
             if target == MouseTarget.CURSOR:
                 self.cursor_thread.push(event)
             elif target == MouseTarget.WHEEL:
                 self.wheel_thread.push(event)
-            else:
-                return
