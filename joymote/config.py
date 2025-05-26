@@ -3,7 +3,7 @@ import os
 import tomllib
 
 from evdev import ecodes as e
-from util import Input, Mapper, MouseTargetValue, Target, TargetType
+from util import AnalogInput, KeyInput, Mapper, MouseTarget
 
 logger = logging.getLogger(__name__)
 
@@ -17,14 +17,18 @@ class Config:
         with open(config_path, "rb") as f:
             self.data = tomllib.load(f)
 
+        # Default configuration
         self.mapper = Mapper()
         self.options = {
             "revert_scroll_x": False,
             "revert_scroll_y": False,
         }
+
+        # Start parsing
         self.parse_general()
         self.parse_keys()
         self.parse_analog()
+        self.parse_options()
 
     def parse_general(self):
         if "general" not in self.data:
@@ -37,15 +41,13 @@ class Config:
         logging.basicConfig(level=log_level)
 
     def parse_keys(self):
-        if "keys" in self.data:
-            for input_str, target_str in self.data["keys"].items():
-                input = Input.from_string(input_str)
-                if input is None or input in [
-                    Input.LEFT_ANALOG,
-                    Input.LEFT_ANALOG_PRESS,
-                    Input.RIGHT_ANALOG,
-                    Input.RIGHT_ANALOG_PRESS,
-                ]:
+        if "key" in self.data:
+            for input_str, target_str in self.data["key"].items():
+                if input_str == "":
+                    continue
+
+                input = KeyInput.from_string(input_str)
+                if input is None:
                     logger.warning("Unknown input '%s'", input_str)
                     continue
 
@@ -53,45 +55,30 @@ class Config:
                     logger.warning("Unknown target '%s'", input_str)
                     continue
 
-                self.mapper.insert(
-                    input, Target(type=TargetType.KEYBOARD, value=e.ecodes[target_str])
-                )
+                self.mapper.insert(input, e.ecodes[target_str])
 
     def parse_analog(self):
         if "analog" in self.data:
-            for key, value in self.data["analog"].items():
-                input = Input.from_string(key)
-                if input is not None and input in [
-                    Input.LEFT_ANALOG_PRESS,
-                    Input.RIGHT_ANALOG_PRESS,
-                ]:
-                    if value in e.ecodes.keys():
-                        self.mapper.insert(
-                            input,
-                            Target(type=TargetType.KEYBOARD, value=e.ecodes[value]),
-                        )
-                    else:
-                        logger.warning("Unknown value '%s'", key)
+            for input_str, target_str in self.data["analog"].items():
+                if input_str == "":
+                    continue
 
-                elif input is not None and input in [
-                    Input.LEFT_ANALOG,
-                    Input.RIGHT_ANALOG,
-                ]:
-                    if value == "cursor":
-                        self.mapper.insert(
-                            input,
-                            Target(
-                                type=TargetType.MOUSE, value=MouseTargetValue.CURSOR
-                            ),
-                        )
-                    elif value == "wheel":
-                        self.mapper.insert(
-                            input,
-                            Target(type=TargetType.MOUSE, value=MouseTargetValue.WHEEL),
-                        )
-                    else:
-                        logger.warning("Unknown value '%s'", value)
-                elif key == "revert_scroll_x":
+                input = AnalogInput.from_string(input_str)
+                if input is None:
+                    logger.warning("Unknown input '%s'", input_str)
+                    continue
+
+                if target_str == "cursor":
+                    self.mapper.insert(input, MouseTarget.CURSOR)
+                elif target_str == "wheel":
+                    self.mapper.insert(input, MouseTarget.WHEEL)
+                else:
+                    logger.warning("Unknown target '%s'", target_str)
+
+    def parse_options(self):
+        if "options" in self.data:
+            for key, value in self.data["options"].items():
+                if key == "revert_scroll_x":
                     if type(value) is bool:
                         self.options["revert_scroll_x"] = value
                     else:

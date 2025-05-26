@@ -1,18 +1,18 @@
 [general]
 # Log messages of level equal to or above the specified level are
 # printed out. Supported levels are "debug", "info", "warning", "error"
-# and "critical" (ordered from lowest to highest).
+# and "critical" (ordered from lowest to highest level).
 # Default: "info"
 #
 #log = "info"
 
-[keys]
+[key]
 # Assign actions to the buttons of the controller. For example, set
 #     a = "KEY_SPACE"
-# then pressing the "A" button on the controller is equivalent to
-# pressing the space bar on the keyboard. The available values are the
-# names of all keys and buttons, namely all names started with `KEY_` or
-# `BTN_` listed in [1].
+# Then, joymote will fire a space bar key stroke when you press the "A"
+# button on the controller. The available values are the names of all
+# keys and buttons, namely all names started with `KEY_` or `BTN_`
+# listed in [1]. Empty string "" means no action.
 #
 # [1] https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h
 #
@@ -34,21 +34,18 @@
 #minus = ""
 #capture = ""
 #home = ""
+#left_analog_press = ""
+#right_analog_press = ""
 
 [analog]
-# Assign actions to the two analog sticks. Set it to "cursor", then the
-# analog stick controls the mouse cursor. Set it to "wheel", then the
-# analog stick controls the mouse wheel.
+# Assign actions to the analog sticks of the controller. Set it to
+# "cursor", then the analog stick controls the mouse cursor. Set it to
+# "wheel", then the analog stick controls the mouse wheel.
 #
 #left_analog = "mouse"
 #right_analog = "wheel"
 
-# Specify the actions when you press the analog sticks. The avaialble
-# values are same as the keys in the section [keys].
-#
-#left_analog_press = ""
-#righ_analogt_press = ""
-
+[options]
 # Revert the horizontal scrolling direction
 # Default: false
 #

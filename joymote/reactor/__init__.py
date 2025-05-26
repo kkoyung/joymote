@@ -1,4 +1,4 @@
-from config import Config, Input, MouseTargetValue
+from config import AnalogInput, Config, KeyInput, MouseTarget
 from evdev import InputEvent, UInput
 from evdev import ecodes as e
 
@@ -23,22 +23,25 @@ class Reactor:
         )
 
     def push(self, event: InputEvent):
-        input = Input.from_event(event)
-        if input is None:
-            return
+        key_input = KeyInput.from_event(event)
+        analog_input = AnalogInput.from_event(event)
 
-        target = self.conf.mapper.translate(input)
-        if target is None:
-            return
+        if key_input is not None:
+            target = self.conf.mapper.translate(key_input)
+            if target is None:
+                return
 
-        if input not in [Input.LEFT_ANALOG, Input.RIGHT_ANALOG]:
-            self.keyboard_ui.write(e.EV_KEY, target.value, 1)
-            self.keyboard_ui.write(e.EV_KEY, target.value, 0)
+            self.keyboard_ui.write(e.EV_KEY, target, 1)
+            self.keyboard_ui.write(e.EV_KEY, target, 0)
             self.keyboard_ui.syn()
-        else:
-            if target.value == MouseTargetValue.CURSOR:
+        elif analog_input is not None:
+            target = self.conf.mapper.translate(analog_input)
+            if target is None:
+                return
+
+            if target == MouseTarget.CURSOR:
                 self.cursor_thread.push(event)
-            elif target.value == MouseTargetValue.WHEEL:
+            elif target == MouseTarget.WHEEL:
                 self.wheel_thread.push(event)
             else:
                 return
