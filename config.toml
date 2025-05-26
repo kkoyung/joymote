@@ -62,12 +62,12 @@
 #right_analog_press = ""
 
 [analog]
-# Assign actions to the analog sticks of the controller. Set it to
-# "cursor", then the analog stick controls the mouse cursor. Set it to
-# "wheel", then the analog stick controls the mouse wheel to scroll.
+# Assign actions to the analog sticks of the controller. If set it to
+# "cursor", the analog stick controls the mouse cursor. If set it to
+# "scroll", then the analog stick controls the mouse wheel to scroll.
 #
 #left_analog = "mouse"
-#right_analog = "wheel"
+#right_analog = "scroll"
 
 [options]
 # Revert the horizontal scrolling direction

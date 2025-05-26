@@ -11,7 +11,7 @@ from util import (
     ScrollDirectionTarget,
 )
 
-from reactor.analog import CursorThread, WheelThread
+from reactor.analog import CursorThread, ScrollThread
 
 
 class Reactor:
@@ -25,7 +25,7 @@ class Reactor:
             }
         )
         self.cursor_thread = CursorThread(self.mouse_ui)
-        self.wheel_thread = WheelThread(
+        self.scroll_thread = ScrollThread(
             self.mouse_ui,
             self.conf.options["revert_scroll_x"],
             self.conf.options["revert_scroll_y"],
@@ -68,5 +68,5 @@ class Reactor:
             target = self.conf.mapper.translate(analog_input)
             if target == MouseTarget.CURSOR:
                 self.cursor_thread.push(event)
-            elif target == MouseTarget.WHEEL:
-                self.wheel_thread.push(event)
+            elif target == MouseTarget.SCROLL:
+                self.scroll_thread.push(event)

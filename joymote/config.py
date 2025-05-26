@@ -170,8 +170,8 @@ class Config:
 
                 if target_str == "cursor":
                     self.mapper.insert(input, MouseTarget.CURSOR)
-                elif target_str == "wheel":
-                    self.mapper.insert(input, MouseTarget.WHEEL)
+                elif target_str == "scroll":
+                    self.mapper.insert(input, MouseTarget.SCROLL)
                 else:
                     logger.warning("Unknown target '%s'", target_str)
 

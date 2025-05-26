@@ -114,7 +114,7 @@ class KeyboardTarget:
 
 class MouseTarget(Enum):
     CURSOR = 1
-    WHEEL = 2
+    SCROLL = 2
 
 
 class CommandTarget:

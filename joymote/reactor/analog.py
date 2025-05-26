@@ -73,14 +73,14 @@ class CursorThread(BaseThread):
         self.ui.syn()
 
 
-class WheelThread(BaseThread):
+class ScrollThread(BaseThread):
     def __init__(self, ui: UInput, revert_x: bool, revert_y: bool):
         super().__init__(ui)
         self.revert_x = revert_x
         self.revert_y = revert_y
 
     def step(self):
-        logger.debug("ScrollHandler make a step: x=%d, y=%d", self.x, self.y)
+        logger.debug("ScrollThread make a step: x=%d, y=%d", self.x, self.y)
 
         if self.x == 0:
             self.x = 1  # set to 1 to avoid division of zero
