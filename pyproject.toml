@@ -17,8 +17,8 @@ Documentation = "https://github.com/kkoyung/joymote#readme"
 Repository = "https://github.com/kkoyung/joymote"
 Issue = "https://github.com/kkoyung/joymote/issues"
 
-# [project.scripts]
-# joymote = "joymote.main"
+[project.scripts]
+joymote = "joymote.__main__:main"
 
 [tool.setuptools]
 py-modules = ["joymote"]
