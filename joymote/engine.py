@@ -21,5 +21,9 @@ def start_capture(device, conf: Config):
     reactor = Reactor(conf)
 
     logger.info("Start capturing device: %s, %s", device.path, device.name)
-    for event in device.read_loop():
-        reactor.push(event)
+    try:
+        for event in device.read_loop():
+            reactor.push(event)
+    except KeyboardInterrupt:
+        logger.info("Stop capturing device: %s, %s", device.path, device.name)
+        device.close()
