@@ -40,7 +40,7 @@
 # corresponding direction in the speed specified by the non-negative
 # integer. Typical value is 100.
 #
-# Default: "" (No acttion is assigned.)
+# Default: "" (No action is assigned.)
 #
 #up =""
 #down =""
