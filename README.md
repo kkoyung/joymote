@@ -2,6 +2,8 @@
 
 Use Joy-Con or Pro Controller as remote control of Linux machine.
 
+> Currently, only support Pro Controller. We are working on supporting Joy-Con.
+
 ## Requirements
 
 - [joycond](https://github.com/DanielOgorchock/joycond)
