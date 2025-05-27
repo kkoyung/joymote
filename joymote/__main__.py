@@ -5,11 +5,10 @@ import logging
 import os
 import pathlib
 
-import config
-import engine
-import version
+from joymote import config, engine, version
 
-if __name__ == "__main__":
+
+def main():
     # Parse arguments
     parser = argparse.ArgumentParser(
         description="Use Joy-Con or Pro Controller as remote control of Linux machine.",
@@ -54,3 +53,7 @@ if __name__ == "__main__":
         exit()
     for device in devices:
         engine.start_capture(device, conf)
+
+
+if __name__ == "__main__":
+    main()

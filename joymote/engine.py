@@ -1,8 +1,9 @@
 import logging
 
 import evdev
-from config import Config
-from reactor import Reactor
+
+from .config import Config
+from .reactor import Reactor
 
 logger = logging.getLogger(__name__)
 

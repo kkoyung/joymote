@@ -3,7 +3,8 @@ import os
 import tomllib
 
 from evdev import ecodes as e
-from util import (
+
+from .util import (
     AnalogInput,
     CommandTarget,
     CursorDirectionTarget,

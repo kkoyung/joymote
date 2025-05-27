@@ -1,17 +1,17 @@
 import subprocess
 
-from config import AnalogInput, Config, KeyInput, MouseTarget
 from evdev import InputEvent, UInput
 from evdev import ecodes as e
-from util import (
+
+from ..config import AnalogInput, Config, KeyInput, MouseTarget
+from ..reactor.analog import CursorThread, ScrollThread
+from ..util import (
     CommandTarget,
     CursorDirectionTarget,
     Direction,
     KeyboardTarget,
     ScrollDirectionTarget,
 )
-
-from reactor.analog import CursorThread, ScrollThread
 
 
 class Reactor:

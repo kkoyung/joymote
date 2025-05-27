@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "joymote"
 version = "0.0.2"
@@ -12,6 +16,9 @@ Homepage = "https://github.com/kkoyung/joymote"
 Documentation = "https://github.com/kkoyung/joymote#readme"
 Repository = "https://github.com/kkoyung/joymote"
 Issue = "https://github.com/kkoyung/joymote/issues"
+
+# [project.scripts]
+# joymote = "joymote.main"
 
 [tool.setuptools]
 py-modules = ["joymote"]
