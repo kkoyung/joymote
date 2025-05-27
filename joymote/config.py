@@ -32,6 +32,10 @@ class Config:
         self.options = {
             "revert_scroll_x": False,
             "revert_scroll_y": False,
+            "cursor_speed": 1.0,
+            "scroll_speed": 1.0,
+            "left_analog_idle_range": 1.0,
+            "right_analog_idle_range": 1.0,
         }
 
         # Start parsing
@@ -187,6 +191,38 @@ class Config:
                     if type(value) is bool:
                         self.options["revert_scroll_y"] = value
                     else:
+                        logger.warning("Unknown value '%s'", value)
+                elif key == "cursor_speed":
+                    try:
+                        speed = float(value)
+                        if speed < 0:
+                            raise ValueError("Negative value")
+                        self.options["cursor_speed"] = speed
+                    except ValueError:
+                        logger.warning("Unknown value '%s'", value)
+                elif key == "scroll_speed":
+                    try:
+                        speed = float(value)
+                        if speed < 0:
+                            raise ValueError("Negative value")
+                        self.options["scroll_speed"] = speed
+                    except ValueError:
+                        logger.warning("Unknown value '%s'", value)
+                elif key == "left_analog_idle_range":
+                    try:
+                        idle_range = float(value)
+                        if idle_range < 0:
+                            raise ValueError("Negative value")
+                        self.options["left_analog_idle_range"] = idle_range
+                    except ValueError:
+                        logger.warning("Unknown value '%s'", value)
+                elif key == "right_analog_idle_range":
+                    try:
+                        idle_range = float(value)
+                        if idle_range < 0:
+                            raise ValueError("Negative value")
+                        self.options["right_analog_idle_range"] = idle_range
+                    except ValueError:
                         logger.warning("Unknown value '%s'", value)
                 else:
                     logger.warning("Unknown key '%s'", key)

@@ -15,8 +15,8 @@ class BaseThread(threading.Thread):
 
         self.ui = ui
         self.step_time = 0.02
-        self.step_factor = 1000
-        self.center_threshold = 3000
+        self.step_factor = 0.001
+        self.center_threshold = 3600
         self.stopping_event = threading.Event()
         self.x = 0
         self.y = 0
@@ -54,6 +54,11 @@ class BaseThread(threading.Thread):
 
 
 class CursorThread(BaseThread):
+    def __init__(self, ui: UInput, speed: float = 1.0, idle_range: float = 1.0):
+        super().__init__(ui)
+        self.step_factor *= float(speed)
+        self.center_threshold *= float(idle_range)
+
     def step(self):
         logger.debug("CursorThread make a step: x=%d, y=%d", self.x, self.y)
 
@@ -62,11 +67,11 @@ class CursorThread(BaseThread):
 
         rel_x = int(
             (self.x - self.center_threshold * cos(atan(self.y / self.x)))
-            / self.step_factor
+            * self.step_factor
         )
         rel_y = int(
             (self.y - self.center_threshold * sin(atan(self.y / self.x)))
-            / self.step_factor
+            * self.step_factor
         )
         self.ui.write(e.EV_REL, e.REL_X, rel_x)
         self.ui.write(e.EV_REL, e.REL_Y, rel_y)
@@ -74,8 +79,17 @@ class CursorThread(BaseThread):
 
 
 class ScrollThread(BaseThread):
-    def __init__(self, ui: UInput, revert_x: bool, revert_y: bool):
+    def __init__(
+        self,
+        ui: UInput,
+        speed: float = 1.0,
+        idle_range: float = 1.0,
+        revert_x: bool = False,
+        revert_y: bool = False,
+    ):
         super().__init__(ui)
+        self.step_factor *= float(speed)
+        self.center_threshold *= float(idle_range)
         self.revert_x = revert_x
         self.revert_y = revert_y
 
@@ -87,11 +101,11 @@ class ScrollThread(BaseThread):
 
         rel_x = int(
             (self.x - self.center_threshold * cos(atan(self.y / self.x)))
-            / self.step_factor
+            * self.step_factor
         )
         rel_y = int(
             (self.y - self.center_threshold * sin(atan(self.y / self.x)))
-            / self.step_factor
+            * self.step_factor
         )
 
         if self.revert_x:

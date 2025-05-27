@@ -79,3 +79,22 @@
 # Default: false
 #
 #revert_scroll_y = false
+
+# Cursor moving speed
+# Default: 1.0
+#
+#cursor_speed = 1.0
+
+# Scrolling speed
+# Default: 1.0
+#
+#scroll_speed = 1.0
+
+# The analog stick may not perfectly centered even when you are not
+# touching it, So, joymote simply consider it is idle if its position is
+# close to the center. These two settings control the size of the idle
+# range.
+# Default: 1.0
+#
+#left_analog_idle_range = 1.0
+#right_analog_idle_range = 1.0

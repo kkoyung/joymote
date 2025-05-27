@@ -24,11 +24,32 @@ class Reactor:
                 e.EV_REL: [e.REL_X, e.REL_Y, e.REL_WHEEL_HI_RES, e.REL_HWHEEL_HI_RES],
             }
         )
-        self.cursor_thread = CursorThread(self.mouse_ui)
+
+        if self.conf.mapper.translate(AnalogInput.LEFT) == MouseTarget.CURSOR:
+            cursor_idle_range = self.conf.options["left_analog_idle_range"]
+        elif self.conf.mapper.translate(AnalogInput.RIGHT) == MouseTarget.CURSOR:
+            cursor_idle_range = self.conf.options["right_analog_idle_range"]
+        else:
+            cursor_idle_range = 1.0
+
+        if self.conf.mapper.translate(AnalogInput.LEFT) == MouseTarget.SCROLL:
+            scroll_idle_range = self.conf.options["left_analog_idle_range"]
+        elif self.conf.mapper.translate(AnalogInput.RIGHT) == MouseTarget.SCROLL:
+            scroll_idle_range = self.conf.options["right_analog_idle_range"]
+        else:
+            scroll_idle_range = 1.0
+
+        self.cursor_thread = CursorThread(
+            self.mouse_ui,
+            speed=self.conf.options["cursor_speed"],
+            idle_range=cursor_idle_range,
+        )
         self.scroll_thread = ScrollThread(
             self.mouse_ui,
-            self.conf.options["revert_scroll_x"],
-            self.conf.options["revert_scroll_y"],
+            speed=self.conf.options["scroll_speed"],
+            idle_range=scroll_idle_range,
+            revert_x=self.conf.options["revert_scroll_x"],
+            revert_y=self.conf.options["revert_scroll_y"],
         )
 
     def push(self, event: InputEvent):
