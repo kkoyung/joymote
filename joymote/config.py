@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 
 
 class Config:
-    def __init__(self):
-        # FIXME: default value, loading order
-        home_directory = os.getenv("HOME", "")
-        config_path = home_directory + "/.config/joymote/config.toml"
-
-        with open(config_path, "rb") as f:
-            self.data = tomllib.load(f)
+    def __init__(self, config_path: str):
+        try:
+            config_file = open(config_path, "rb")
+            self.data = tomllib.load(config_file)
+        except Exception:
+            logger.error(f"Cannot open config file: {config_path}")
+            exit()
 
         # Default configuration
         self.mapper = Mapper()
