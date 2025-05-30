@@ -2,8 +2,6 @@
 
 Use Joy-Con or Pro Controller as remote control of Linux machine.
 
-> Currently, only support Pro Controller. We are working on supporting Joy-Con.
-
 ## Requirements
 
 - [Python](https://www.python.org)
@@ -42,7 +40,7 @@ pip install joymote
 ```bash
 git clone https://github.com/kkoyung/joymote.git joymote
 cd joymote
-# check out different version by tags
+# check out different version by tags, if you want
 pip install .
 ```
 
@@ -54,14 +52,21 @@ pip install .
     wget -o ~/.config/joymote/config.toml https://raw.githubusercontent.com/kkoyung/joymote/refs/heads/main/config.toml
     ```
 
-2. Connect to the controller via Bluetooth, just like usual Bluetooth devices. Tips: Press and hold down the tiny button between ZL and ZR buttons, for at least one second to enter pairing mode.
-3. Run `joymote`.
+2. Connect to the controller via Bluetooth, just like usual Bluetooth devices.
+
+    1. Press and hold down the SYNC button (the tiny button between SL and SR on Joy-Con, or the tiny button between L and R button on Pro Controller) for at least one second to enter pairing mode.
+    2. Enable Bluetooth of your computer, and scan new devices.
+    3. Find a device named "Joy-Con (L)", "Joy-Con (R)", or "Pro Controller". Pair and connect to it.
+
+3. Start `joymote`.
 
     ```bash
     joymote
     ```
 
-4. By default, joymote does nothing. Check out `config.toml` and change it to configure joymote's behaviours.
+4. By default, Joymote does nothing. Check out `config.toml` and change it to configure Joymote's behaviours upon pressing buttons on the controller.
+
+> Up to now, if you connect multiple controllers to your computer, Joymote can only monitor one of them.
 
 ## Development
 

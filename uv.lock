@@ -10,7 +10,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/63/fe/a17c106a1f4061ce8
 
 [[package]]
 name = "joymote"
-version = "0.0.2"
+version = "0.0.3"
 source = { editable = "." }
 dependencies = [
     { name = "evdev" },

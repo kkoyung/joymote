@@ -6,7 +6,9 @@
 #
 #log = "info"
 
-[key]
+######################## Pro Controller ################################
+
+[pro_controller.key]
 # Assign actions to the buttons of the controller.
 #
 # An action consists of type and content, separated by a colon ":". It
@@ -27,18 +29,22 @@
 # "command"" action:
 # The content part is a command that will be executed when you press the
 # controller button. If you set `b = "command:touch ~/file.txt"`, then
-# the command "touch ~/file.txt" will be triggered when you press the
+# the command "touch ~/file.txt" will be executed when you press the
 # "B" button of the controller.
 #
 # "cursor_up", "cursor_down", "cursor_left", "cursor_right" action:
 # The content part is a non-negative integer. The cursor will move in
 # the corresponding direction by the specified number of pixels when you
-# press the controller button.
+# press the controller button. If you set "left = cursor_left:10", then
+# the cursor will move to the left by 10 pixels when you press the left
+# button.
 #
 # "scroll_up", "scroll_down", "scroll_left", "scroll_right" action:
 # The content part is a non-negative integer. Scroll in the
 # corresponding direction in the speed specified by the non-negative
-# integer. Typical value is 100.
+# integer. For example, if you set "x = scroll_up:10", the focused
+# window will be scrolled upward when you press the X button. Typical
+# value is 100.
 #
 # Default: "" (No action is assigned.)
 #
@@ -61,7 +67,7 @@
 #left_analog_press = ""
 #right_analog_press = ""
 
-[analog]
+[pro_controller.analog]
 # Assign actions to the analog sticks of the controller. If set it to
 # "cursor", the analog stick controls the mouse cursor. If set it to
 # "scroll", then the analog stick controls the mouse wheel to scroll.
@@ -69,7 +75,7 @@
 #left_analog = "mouse"
 #right_analog = "scroll"
 
-[options]
+[pro_controller.options]
 # Revert the horizontal scrolling direction
 # Default: false
 #
@@ -98,3 +104,87 @@
 #
 #left_analog_idle_range = 1.0
 #right_analog_idle_range = 1.0
+
+######################## Joy-Con (Left) ################################
+[joy_con_left.key]
+# These configurations are similar to those in [pro-controller.key].
+#
+# Note that the `up`, `down`, `left`, `right` are based on the vertical
+# orientation of the Joy-Con, independent of the `orientation` setting
+# in [joy_con_left.options] section.
+#
+#up =""
+#down =""
+#left =""
+#right =""
+#l = ""
+#zl = ""
+#sl = ""
+#sr = ""
+#minus = ""
+#capture = ""
+#analog_press = ""
+
+[joy_con_left.analog]
+# This configuration is similar to the one in [pro-controller.analog].
+#
+#analog = ""
+
+[joy_con_left.options]
+# These configurations are similar to those in [pro-controller.option].
+#
+#revert_scroll_x = false
+#revert_scroll_y = false
+#cursor_speed = 1.0
+#scroll_speed = 1.0
+#analog_idle_range = 1.0
+
+# Orientation of the direction of the analog sticks received by the
+# computer depends on how you hold the Joy-Con. This configuration let
+# you specify the orientation. Possible values are "vertical" and
+# "horizontal".
+# Default: "vertical"
+#
+#orientation = "vertical"
+
+######################## Joy-Con (Right) ###############################
+[joy_con_right.key]
+# These configurations are similar to those in [pro-controller.key].
+#
+# Note that the `a`, `b`, `x`, `y` are based on the vertical orientation
+# of the Joy-Con, independent of the `orientation` setting in
+# [joy_con_right.options] section.
+#
+#a =""
+#b =""
+#x =""
+#y =""
+#r = ""
+#zr = ""
+#sl = ""
+#sr = ""
+#plus = ""
+#home = ""
+#analog_press = ""
+
+[joy_con_right.analog]
+# This configuration is similar to the one in [pro-controller.analog].
+#
+#analog = ""
+
+[joy_con_right.options]
+# These configurations are similar to those in [pro-controller.option].
+#
+#revert_scroll_x = false
+#revert_scroll_y = false
+#cursor_speed = 1.0
+#scroll_speed = 1.0
+#analog_idle_range = 1.0
+
+# Orientation of the direction of the analog sticks received by the
+# computer depends on how you hold the Joy-Con. This configuration let
+# you specify the orientation. Possible values are "vertical" and
+# "horizontal".
+# Default: "vertical"
+#
+#orientation = "vertical"

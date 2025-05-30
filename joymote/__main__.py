@@ -51,8 +51,9 @@ def main():
     if len(devices) == 0:
         logger.warning("Not detected device")
         exit()
-    for device in devices:
-        engine.start_capture(device, conf)
+
+    device = devices[0]
+    engine.start_capture(device, conf)
 
 
 if __name__ == "__main__":

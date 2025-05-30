@@ -3,10 +3,11 @@ import subprocess
 from evdev import InputEvent, UInput
 from evdev import ecodes as e
 
-from ..config import AnalogInput, Config, KeyInput, MouseTarget
+from ..config import AnalogInput, ControllerConfig, KeyInput, MouseTarget
 from ..reactor.analog import CursorThread, ScrollThread
 from ..util import (
     CommandTarget,
+    ControllerType,
     CursorDirectionTarget,
     Direction,
     KeyboardTarget,
@@ -15,7 +16,7 @@ from ..util import (
 
 
 class Reactor:
-    def __init__(self, conf: Config):
+    def __init__(self, conf: ControllerConfig):
         self.conf = conf
         self.keyboard_ui = UInput()
         self.mouse_ui = UInput(
@@ -25,19 +26,42 @@ class Reactor:
             }
         )
 
-        if self.conf.mapper.translate(AnalogInput.LEFT_ANALOG) == MouseTarget.CURSOR:
-            cursor_idle_range = self.conf.options["left_analog_idle_range"]
-        elif self.conf.mapper.translate(AnalogInput.RIGHT_ANALOG) == MouseTarget.CURSOR:
-            cursor_idle_range = self.conf.options["right_analog_idle_range"]
-        else:
-            cursor_idle_range = 1.0
+        if self.conf.controller_type == ControllerType.PRO_CONTOLLER:
+            if (
+                self.conf.mapper.translate(AnalogInput.LEFT_ANALOG)
+                == MouseTarget.CURSOR
+            ):
+                cursor_idle_range = self.conf.options["left_analog_idle_range"]
+            elif (
+                self.conf.mapper.translate(AnalogInput.RIGHT_ANALOG)
+                == MouseTarget.CURSOR
+            ):
+                cursor_idle_range = self.conf.options["right_analog_idle_range"]
+            else:
+                cursor_idle_range = 1.0
 
-        if self.conf.mapper.translate(AnalogInput.LEFT_ANALOG) == MouseTarget.SCROLL:
-            scroll_idle_range = self.conf.options["left_analog_idle_range"]
-        elif self.conf.mapper.translate(AnalogInput.RIGHT_ANALOG) == MouseTarget.SCROLL:
-            scroll_idle_range = self.conf.options["right_analog_idle_range"]
+            if (
+                self.conf.mapper.translate(AnalogInput.LEFT_ANALOG)
+                == MouseTarget.SCROLL
+            ):
+                scroll_idle_range = self.conf.options["left_analog_idle_range"]
+            elif (
+                self.conf.mapper.translate(AnalogInput.RIGHT_ANALOG)
+                == MouseTarget.SCROLL
+            ):
+                scroll_idle_range = self.conf.options["right_analog_idle_range"]
+            else:
+                scroll_idle_range = 1.0
         else:
-            scroll_idle_range = 1.0
+            if self.conf.mapper.translate(AnalogInput.ANALOG) == MouseTarget.CURSOR:
+                cursor_idle_range = self.conf.options["analog_idle_range"]
+            else:
+                cursor_idle_range = 1.0
+
+            if self.conf.mapper.translate(AnalogInput.ANALOG) == MouseTarget.SCROLL:
+                scroll_idle_range = self.conf.options["analog_idle_range"]
+            else:
+                scroll_idle_range = 1.0
 
         self.cursor_thread = CursorThread(
             self.mouse_ui,
@@ -53,8 +77,8 @@ class Reactor:
         )
 
     def push(self, event: InputEvent):
-        key_input = KeyInput.from_event(event)
-        analog_input = AnalogInput.from_event(event)
+        key_input = KeyInput.from_event(event, self.conf.controller_type)
+        analog_input = AnalogInput.from_event(event, self.conf.controller_type)
 
         if key_input is not None:
             target = self.conf.mapper.translate(key_input)

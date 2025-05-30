@@ -7,6 +7,7 @@ from evdev import ecodes as e
 from .util import (
     AnalogInput,
     CommandTarget,
+    ControllerType,
     CursorDirectionTarget,
     Direction,
     KeyboardTarget,
@@ -23,10 +24,31 @@ class Config:
     def __init__(self, config_path: str):
         try:
             config_file = open(config_path, "rb")
-            self.data = tomllib.load(config_file)
+            data = tomllib.load(config_file)
         except Exception:
             logger.error(f"Cannot open config file: {config_path}")
             exit()
+
+        if "general" in data:
+            # Log level
+            log_level = data["general"].get("log", "INFO").upper()
+            log_level = os.environ.get("JOYMOTE_LOG", log_level).upper()
+            logging.basicConfig(level=log_level)
+
+        self.pro_contoller = ControllerConfig(
+            data.get("pro_controller", {}), ControllerType.PRO_CONTOLLER
+        )
+        self.joy_con_left = ControllerConfig(
+            data.get("joy_con_left", {}), ControllerType.JOY_CON_LEFT
+        )
+        self.joy_con_right = ControllerConfig(
+            data.get("joy_con_right", {}), ControllerType.JOY_CON_RIGHT
+        )
+
+
+class ControllerConfig:
+    def __init__(self, data: dict, controller_type: ControllerType):
+        self.controller_type = controller_type
 
         # Default configuration
         self.mapper = Mapper()
@@ -40,28 +62,17 @@ class Config:
         }
 
         # Start parsing
-        self.parse_general()
-        self.parse_keys()
-        self.parse_analog()
-        self.parse_options()
+        self.parse_keys(data)
+        self.parse_analog(data)
+        self.parse_options(data)
 
-    def parse_general(self):
-        if "general" not in self.data:
-            return
-        general = self.data["general"]
-
-        # Log level
-        log_level = general.get("log", "INFO").upper()
-        log_level = os.environ.get("JOYMOTE_LOG", log_level).upper()
-        logging.basicConfig(level=log_level)
-
-    def parse_keys(self):
-        if "key" in self.data:
-            for input_str, target_str in self.data["key"].items():
+    def parse_keys(self, data: dict):
+        if "key" in data:
+            for input_str, target_str in data["key"].items():
                 if input_str == "":
                     continue
 
-                input = KeyInput.from_string(input_str)
+                input = KeyInput.from_string(input_str, self.controller_type)
                 if input is None:
                     logger.warning("Unknown input '%s'", input_str)
                     continue
@@ -162,13 +173,13 @@ class Config:
                 else:
                     logger.warning("Unknown target '%s'", target_str)
 
-    def parse_analog(self):
-        if "analog" in self.data:
-            for input_str, target_str in self.data["analog"].items():
+    def parse_analog(self, data: dict):
+        if "analog" in data:
+            for input_str, target_str in data["analog"].items():
                 if input_str == "":
                     continue
 
-                input = AnalogInput.from_string(input_str)
+                input = AnalogInput.from_string(input_str, self.controller_type)
                 if input is None:
                     logger.warning("Unknown input '%s'", input_str)
                     continue
@@ -180,9 +191,9 @@ class Config:
                 else:
                     logger.warning("Unknown target '%s'", target_str)
 
-    def parse_options(self):
-        if "options" in self.data:
-            for key, value in self.data["options"].items():
+    def parse_options(self, data: dict):
+        if "options" in data:
+            for key, value in data["options"].items():
                 if key == "revert_scroll_x":
                     if type(value) is bool:
                         self.options["revert_scroll_x"] = value
@@ -209,7 +220,10 @@ class Config:
                         self.options["scroll_speed"] = speed
                     except ValueError:
                         logger.warning("Unknown value '%s'", value)
-                elif key == "left_analog_idle_range":
+                elif (
+                    key == "left_analog_idle_range"
+                    and self.controller_type == ControllerType.PRO_CONTOLLER
+                ):
                     try:
                         idle_range = float(value)
                         if idle_range < 0:
@@ -217,12 +231,26 @@ class Config:
                         self.options["left_analog_idle_range"] = idle_range
                     except ValueError:
                         logger.warning("Unknown value '%s'", value)
-                elif key == "right_analog_idle_range":
+                elif (
+                    key == "right_analog_idle_range"
+                    and self.controller_type == ControllerType.PRO_CONTOLLER
+                ):
                     try:
                         idle_range = float(value)
                         if idle_range < 0:
                             raise ValueError("Negative value")
                         self.options["right_analog_idle_range"] = idle_range
+                    except ValueError:
+                        logger.warning("Unknown value '%s'", value)
+                elif key == "analog_idle_range" and (
+                    self.controller_type == ControllerType.JOY_CON_LEFT
+                    or self.controller_type == ControllerType.JOY_CON_RIGHT
+                ):
+                    try:
+                        idle_range = float(value)
+                        if idle_range < 0:
+                            raise ValueError("Negative value")
+                        self.options["analog_idle_range"] = idle_range
                     except ValueError:
                         logger.warning("Unknown value '%s'", value)
                 else:
