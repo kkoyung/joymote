@@ -81,8 +81,8 @@ class KeyInput(Enum):
 
 
 class AnalogInput(Enum):
-    LEFT = 1
-    RIGHT = 2
+    LEFT_ANALOG = 1
+    RIGHT_ANALOG = 2
 
     @staticmethod
     def from_string(string: str):
@@ -96,9 +96,9 @@ class AnalogInput(Enum):
     def from_event(event: InputEvent):
         if event.type == e.EV_ABS:
             if event.code == e.ABS_X or event.code == e.ABS_Y:
-                return AnalogInput.LEFT
+                return AnalogInput.LEFT_ANALOG
             elif event.code == e.ABS_RX or event.code == e.ABS_RY:
-                return AnalogInput.RIGHT
+                return AnalogInput.RIGHT_ANALOG
 
 
 type Input = KeyInput | AnalogInput

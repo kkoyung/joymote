@@ -25,16 +25,16 @@ class Reactor:
             }
         )
 
-        if self.conf.mapper.translate(AnalogInput.LEFT) == MouseTarget.CURSOR:
+        if self.conf.mapper.translate(AnalogInput.LEFT_ANALOG) == MouseTarget.CURSOR:
             cursor_idle_range = self.conf.options["left_analog_idle_range"]
-        elif self.conf.mapper.translate(AnalogInput.RIGHT) == MouseTarget.CURSOR:
+        elif self.conf.mapper.translate(AnalogInput.RIGHT_ANALOG) == MouseTarget.CURSOR:
             cursor_idle_range = self.conf.options["right_analog_idle_range"]
         else:
             cursor_idle_range = 1.0
 
-        if self.conf.mapper.translate(AnalogInput.LEFT) == MouseTarget.SCROLL:
+        if self.conf.mapper.translate(AnalogInput.LEFT_ANALOG) == MouseTarget.SCROLL:
             scroll_idle_range = self.conf.options["left_analog_idle_range"]
-        elif self.conf.mapper.translate(AnalogInput.RIGHT) == MouseTarget.SCROLL:
+        elif self.conf.mapper.translate(AnalogInput.RIGHT_ANALOG) == MouseTarget.SCROLL:
             scroll_idle_range = self.conf.options["right_analog_idle_range"]
         else:
             scroll_idle_range = 1.0
